@@ -39,4 +39,12 @@ describe('generate subSequences ', () => {
 
     expect(result).toEqual(expected);
   });
+  it('should return sequences sorted by min numbers first', async () => {
+    const sequence = [2, 1, 3];
+    const expected = [[1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]];
+    const result = generatesubSequencess(sequence);
+    console.log(result);
+
+    expect(result).toEqual(expected);
+  });
 });

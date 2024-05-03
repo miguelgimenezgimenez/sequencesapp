@@ -1,4 +1,5 @@
 export function generatesubSequencess(seq: number[]): number[][] {
+  seq.sort();
   const result: number[][] = [];
 
   function backtrack(start: number, path: number[]) {
