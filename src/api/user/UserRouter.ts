@@ -7,12 +7,10 @@ import DIContainer from '../../di/diContainer';
 import DI_TYPES from '../../di/DITypes';
 import IUserService from './interfaces/IUserService';
 
-
-
 export default class UserRouter extends BaseRouter {
   constructor() {
     // Create path from _dirname (users)
-    super(__dirname)
+    super(__dirname);
   }
   createRouter(): Router {
     const router = Router();
@@ -21,6 +19,6 @@ export default class UserRouter extends BaseRouter {
     );
     router.post('/signup', userController.signup);
     router.post('/login', userController.login);
-    return router
+    return router;
   }
 }
