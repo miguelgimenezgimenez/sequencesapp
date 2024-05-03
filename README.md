@@ -1,16 +1,19 @@
 ### Sequences app
 
-Para lanzar la app:
+Para crear la app he reutilizado un antiguo proyecto de Express y TS que había realizado, ya que sólo he podido dedicarle 2 tardes. La autenticación esta hecha con passport con una estrategia JWT. Para el manejo de errores he utilizado la librería express-async-errors, que captura todos los errores lanzados por las funciones `async-await` de manera que no hace falta envolverlas en bloques `try-catch`, esto es una manera de simplificar la aplicación, pero en una apliación en producción es posible que quisieramos un manejo mas granular de estos errores, utilizando bloques `try-catch` para ello.
+
+Hay tests de integración que se lanzan contra la base de datos de development, en un entorno real estos test deberian lanzarse contra una base de datos específica de testing. También hay una serie de tests unitarios , no hay una gran cobertura de los tests ya que no he dispuesto de demasiado tiempo para hacer la aplicación.
+
+*Para lanzar la app:*
 
 `docker compose up`
 
-Ejecutar los tests:
+*Ejecutar los tests:*
 
 `npm test`
 
 **Nota***
 
-Hay tests de integración que se lanzan contra la base de datos de development, en un entorno real estos test deberian lanzarse contra una base de datos específica de testing.
 
 ## Endpoints :
 
