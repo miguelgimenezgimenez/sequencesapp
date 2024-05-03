@@ -8,7 +8,7 @@ import DI_TYPES from '../../di/DITypes';
 import ISequenceService from './interfaces/ISequenceService';
 import authenticate from '../../middlewares/authenticate';
 
-export default class UserRouter extends BaseRouter {
+export default class SequenceRouter extends BaseRouter {
   constructor() {
     // Create path from _dirname (sequence)
     super(__dirname);
