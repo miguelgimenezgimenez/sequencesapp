@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import IDatabase from '../interfaces/IDatabase';
 import availableModels from '../../models/index';
-import { Post, User } from '../../models';
+import { Sequence, User } from '../../models';
 
 class MongoDatabase implements IDatabase {
   private uri: string;
@@ -15,7 +15,7 @@ class MongoDatabase implements IDatabase {
   loadModels() {
     // This could be done reading a directory and assigning the models from the filesystem
     this.models = {
-      [availableModels.post]: Post,
+      [availableModels.sequence]: Sequence,
       [availableModels.user]: User,
     }
   }

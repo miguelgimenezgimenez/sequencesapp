@@ -1,27 +1,26 @@
-import 'express-async-errors'
+import 'express-async-errors';
 // Importing this package will catch all errors that are thrown in async functions and pass them to the next() function which will then be handled by our error handler middleware.
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import passport from 'passport';
-import { rateLimit } from 'express-rate-limit'
+import { rateLimit } from 'express-rate-limit';
 import correlator from 'express-correlation-id';
 
 import errorHandler from './middlewares/errorHandler';
 import jwtStrategy from './auth/jwtStrategy';
 import { IAppRouter } from './api/BaseRouter';
 import DIContainer from './di/diContainer';
-import UserService from './api/users/UserService';
-import PostService from './api/posts/PostService';
+import UserService from './api/user/UserService';
 import MongoDatabase from './database/mongo/MongoDatabase';
 import MongoDataService from './database/mongo/MongoDataService';
 import Logger from './lib/Logger';
 
 import DI_TYPES from './di/DITypes';
-import { NODE_ENV, CLIENT_ORIGIN, MONGO_URI } from './config';
+import { NODE_ENV, CLIENT_ORIGIN, MONGO_DB_URI } from './config';
 import IDatabase from './database/interfaces/IDatabase';
-
+import SequenceService from './api/sequence/SequenceService';
 
 class App {
   private app: express.Application;
@@ -32,7 +31,7 @@ class App {
 
   private async initializeDependencies() {
     DIContainer.initialize();
-    await this.initializeDatabase(MONGO_URI);
+    await this.initializeDatabase(MONGO_DB_URI);
     this.initializeServices();
   }
 
@@ -46,31 +45,29 @@ class App {
   }
 
   private initializeServices() {
-    const database = DIContainer.get<IDatabase>(DI_TYPES.Database)
+    const database = DIContainer.get<IDatabase>(DI_TYPES.Database);
 
     const dataService = new MongoDataService(database);
     DIContainer.bind(DI_TYPES.DataService, dataService);
 
-    const postService = new PostService(dataService);
-    DIContainer.bind(DI_TYPES.PostService, postService);
-
     const userService = new UserService(dataService);
     DIContainer.bind(DI_TYPES.UserService, userService);
 
-    const logger = new Logger()
-    DIContainer.bind(DI_TYPES.Logger, logger);
+    const sequenceService = new SequenceService(dataService);
+    DIContainer.bind(DI_TYPES.SequenceService, sequenceService);
 
+    const logger = new Logger();
+    DIContainer.bind(DI_TYPES.Logger, logger);
   }
 
   public async config(routers: IAppRouter[]): Promise<express.Application> {
-
-    await this.initializeDependencies()
+    await this.initializeDependencies();
 
     // CORS (Cross Origin Resource Sharing)
     this.app.use(
       cors({
         origin: [CLIENT_ORIGIN],
-      })
+      }),
     );
 
     // Security headers
@@ -81,28 +78,30 @@ class App {
     this.app.use(express.urlencoded({ extended: true }));
 
     // Rate limit
-    this.app.use('/api', rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-      standardHeaders: 'draft-7', // Set `RateLimit` and `RateLimit-Policy` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    })
-    )
+    this.app.use(
+      '/api',
+      rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+        standardHeaders: 'draft-7', // Set `RateLimit` and `RateLimit-Policy` headers
+        legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+      }),
+    );
     this.app.use(correlator());
-    // Logging 
+    // Logging
     const format =
       NODE_ENV !== 'production'
         ? 'dev'
         : '[:date[clf]] :method :url :status :res[content-length] - :response-time ms';
-    const logger = DIContainer.get<Logger>(DI_TYPES.Logger)
+    const logger = DIContainer.get<Logger>(DI_TYPES.Logger);
 
     const morganOption = {
       stream: {
         write: (message: any) => {
           // Use the Winston logger here
-          logger.info(message)
-        }
-      }
+          logger.info(message);
+        },
+      },
     };
     this.app.use(morgan(format, morganOption));
 

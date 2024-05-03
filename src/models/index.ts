@@ -1,9 +1,9 @@
-import Post from './post';
+import Sequence from './sequence';
 import User from './user';
 
 enum availableModels {
   user = 'user',
-  post = 'post',
+  sequence = 'sequence',
 }
-export { Post, User }
+export { Sequence, User }
 export default availableModels
