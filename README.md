@@ -5,6 +5,9 @@ Para crear la app he reutilizado un antiguo proyecto de Express y TS que había 
 Hay tests de integración que se lanzan contra la base de datos de development, en un entorno real estos test deberian lanzarse contra una base de datos específica de testing. También hay una serie de tests unitarios , no hay una gran cobertura de los tests ya que no he dispuesto de demasiado tiempo para hacer la aplicación.
 
 *Para lanzar la app:*
+Crear archivo `.env` con las variables del archivo `.env.test`
+
+Lanzar app:
 
 `docker compose up`
 
